@@ -1,14 +1,38 @@
-# Welcome to your Lovable project
+# Library Steward
+
+Quiero una interfaz de un sistema de inventario de biblioteca. Este debe poder almacenar libros, juegos de mesa y la posibilidad de crear una nueva categoría si se requiere. El inventario va a ser controlado por códigos de barras ya que se tiene un scanner para introducir los libros. Todo debe funcionar en una sola pantalla, sin deslizar hacia abajo, solo ventanas de texto que aparecen encima de la página principal. Quiero que la página principal tenga una sección de scanner, es decir una barra para introducir texto donde me paro para scannera mi codigo de barras y a un lado de esta debe tener 3 opciones: consultar información, préstamo o devolución.
+
+Consultar información debe mostrar toda la información disponible del elemento, es decir si es un libro debe mostrar su categoría (libro), titulo, su genero, su autor, descripción y toda la información que se tenga almacenada al respecto, además de mostrar si se encuentra libre o en préstamo a alguien y su información. Préstamo es para iniciar un préstamo, esta opción debe verificar si se encuentra libre o no, si no se encuentra libre debe decir que aún está ocupado y la información de quien lo ocupa. En caso de no estar ocupado debe solicitar cuantos días será prestado, Nombre del responsable del préstamo y Numero de telefono, todos los campos son obligatorios excepto el numero de telefono. Devolución es para cambiar el estado del libro a libre para préstamo, si este libro no se encuentra en préstamo debe mostrar que el libre ya se encontraba disponible para su préstamo y si la operacion es exitosa y se devuelve debe mostrar quien devuelve, es decir, la última persona que lo pidió prestado y una advertencia si tuvo día de demora en su devolución.
+
+Por otro lado deben haber otras 4 opciones que son: Agregar nuevo elemento, Editar elemento, Abrir inventario e Imprimir nuevos códigos de barras. En agregar nuevo elemento se debe abriri una pestaña de datos del nuevo elemento. En primer lugar debe dar la opcion de asignarle un codigo de barras por escaneo o generar un nuevo código. Cuando sea por escaneo debe verificar si este ya existe o no, si ya existe mostrar advertencia de que este es el codigo del elemento y nombrar el elemento, decir que este no podrá ser usado, que se recomienda generar una nuevo. El botón de generar nuevo codigo debe permitir almacenar este como pendiente de impresión en una lista para imprimirlo en otras opciones. Luego debe solicitar seleccionar una categoría por desplegables y que aparezca libro o juego de mesa o otro. Si se selecciona la opcion otro debe solicitar escribir cual es el nombre de la nuva categoria y permitir personalizar los campos de información. El primer campo obligatoriamente será el Nombre del elemento y de ahí en adelante que aparezca Campo #1 para ponerle nombre y su contenido. Una vez agregado este elemento de ahí en adelante debe poder seleccionarse esa opción en el campo de desplegables de categoría y deben aparecer los mismos campos seleccionados anteriormente. Ahora bien, cada opción de desplegable de categoría al final debe permitir agregar nuevos campos de la misma manera ya descritos y si se deja algún campo vacío debe ocultar este campo para este elemento para que al consultar su información no aparezca vacío sino que no se muestre ni siquiera el titulo. 
+
+Para la categoría libros quiero que tenga los siguientes campos ya predeterminados: Título, Autor(es), Editorial, Año de publicación, Idioma (Español, Inglés, Francés), Género (Educación, Ciencia ficción, Terror, Cuentos, Fantasia, Comic, Mitología, Poesía, Ciencia, Historia, Ilustraciones, Humor, Aventura, Otro y debe preguntar cual), Estado (Perfecto, Bueno, Regular, Malo), Descripción y Destacados (SI o NO). La categoría de destacados debe ser de selección si o no, en caso de seleccionar si, pregunta Habilidad destacada, y el usuario debe introducir una habilidads en el campo. Todos los campos descritos que tienne opciones entre parentesis deben ser desplegables.
+
+Para la categoría de juegos de mesa quiero que tenga los siguientes campos predeterminados: Nombre del juego, Marca, Tipo de juego (Cartas, Tablero, Dados, Fichas, Memoria, Palabras, Preguntas, Construcción, Rompecabezas, Educación, Adivinanzas, Dibujo, Otros y debe preguntar cual), Edad recomendada (+1, +2, +3, +4, +5, +10, +12, Otro y preguntar para más de cuantos años y solo permitir introducir numeros), Número de jugadores (1, 2, 3, 4, 5, 6, 7, 8, Otro y debe preguntar cuantos y solo dejar introducir numeros), Nivel de dificultad (Fácil, Medio, Dificil), Estado (Perfecto, Bueno, Regular, Malo), Piezas completas (Si o No) y Destacados (SI o NO). La categoría de destacados debe ser de selección si o no, en caso de seleccionar si, pregunta Habilidad destacada, y el usuario debe introducir una habilidads en el campo. Nuevamente, todos los campos con parentesis es porque son desplegables.
+
+En los 3 casos, el único campo obligatorio es el nombre, ya sea el titulo del libro, el nombre del juego de mesa o el nombre del elemento.
+
+En la opción de editar elemento debe abrirse una pestaña en la que permita escanear un codigo de barras, verifique si existe o no, si no existe debe mostrar un error. Si si existe debe permitir elegir entre Editar o Eliminar elemento. Si se selecciona Editar debe abrir nuevamente los campos que aparecen al agregar un nuevo elemento pero sin la sección de codigos de barras ya que el codigo no puede cambiar. Se pueden modificar los campos y al finalizar debe aparecer una pestaña encima solicitando confirmar o descartar los cambios hechos, si se descartan dejarlos como estaban antes pero si se aceptan actualizar la base de datos. Si se selecciona eliminar se arroja un mensaje de confirmación de que se desea eliminar el titulo del libro, el nombre del juego de mesa o el nombre del elemento y advertir que esto no se podrá revertir.
+
+En la opción de Abrir inventario, debe mostrar en una tabla esta serie de columnas: una columna numerada, el codigo de barras de cada elemento, la categoría de cada elemento, el nombre de cada elemento (titulo o nombre), el estado de prestamo (Libre o Prestado) y una ultima columna con un boton que diga Detalle, donde aparezca una ventana con toda la información del elemento. 
+
+La opción de imprimir codigos de barras debe tener una lista de codigos de barras pendientes por imprimir que hayan sido los generados nuevos, estos identificados con el nombre del elemento a su lado para saber a que correponden. Se debe poder selecionar uno por uno o todos a la vez de estos codigos de barras y además tener un botón que diga renovar codigos y que este permita seleccionar de todo el inventario alguno que ya esté impreso para la selección. De todos los codigos de elementos selecionados se deben organizar en un formato pdf con espacio de 5x3 cm para cada codigo y el codigo debe medir 4x2 cm centrado en este espacio, es decir con margenes en todos los extremos de 0.5 cm. Esto se debe organizar de a maximo 36 códigos por hoja, lo que quiere decir que son 4 a lo ancho de la hoja y 9 a lo largo de la hoja. Debe descargarse. Debe mostrar una previsualización del documento y tener un boton que diga "Descargar". Una vez se oprime este, se descarga al dispositivo localmente y se eliminan de la lista de pendientes por imprimir todos aquellos que hayan sido selecionados en la descarga.
+
+Por ultimo, quiero al costado izquierdo de la pagina principal 2 opciones: una columna con las devoluciones organizadas de la más urgente a la menos urgente, es decir las que tengan más días de retraso en la devolución o las que estén más cercanas a vencerse su periodo de prestamo, hasta las que más tiempo tienen restante de su prestamo. Debe ser una columna que se actualiza al agregar devoluciones y debe poder con el mouse deslizarse hasta el final pero manteniendo el fondo estatico, deslizar solo la columna. Esta columna debe presentar información de nombre del elemento, días restantes de prestamo (en verde si aún es vijente o en rojo si está en negativo) y nombre del responsable. Justo encima de esta columna debe haber un boton que diga Destacados y de ahí desplegar todos los elementos destacados y su habilidad asociada por la que está destacado, es decir, debe mostrar el nombre del elemento, su categoría y su habilidad.
+
+Por último, todo este sistema se debe ver controlado por un excel llamado invetario_pocalana.xlsx y la página principal debe estar marcada con el logo de la imagen cargada, colores similares este. La paleta de colores más o menos selecionada en hexadecimal es esta: #DC2626, #7695D9, #7695D9, #7695D9, #A3727C sin embargo puedes usar otros colores. Quiero que el fondo de la aplicación sea claro, ya sean tonos crema, hueso, azulados, blanco o similares
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://lend-it-well.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/c7f89266-a8e4-4b04-85b0-4e93cae1044f).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +44,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
