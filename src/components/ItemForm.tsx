@@ -11,7 +11,7 @@ export function FieldInput({
 }: {
   field: F;
   value: string;
-  followUpValue?: string;
+  followUpValue?: string | undefined;
   onChange: (v: string) => void;
   onFollowUp?: (v: string) => void;
 }) {
