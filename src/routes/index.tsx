@@ -165,37 +165,49 @@ function Home() {
         {/* Centro */}
         <section className="flex min-h-0 flex-col gap-4">
           <div className="rounded-2xl border border-border bg-card p-5 shadow">
-            <Field label="Escáner de código de barras">
-              <div className="flex gap-3">
-                <input
-                  ref={scanRef}
-                  autoFocus
-                  className={`${inputClass} text-lg font-mono`}
-                  placeholder="Escanea aquí el código…"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && withItem("consulta")}
-                />
+            <div className="flex items-center gap-6">
+              <div className="flex flex-1 flex-col gap-3">
+                <div className="text-sm text-foreground/80">
+                  <p className="font-bold text-foreground">Instrucciones</p>
+                  <ol className="list-decimal pl-4">
+                    <li>Escanee aquí el codigo de barras</li>
+                    <li>Selecciones la opcion que desee</li>
+                  </ol>
+                </div>
+                <Field label="Escáner de código de barras">
+                  <input
+                    ref={scanRef}
+                    autoFocus
+                    className={`${inputClass} text-lg font-mono`}
+                    placeholder="Escanea aquí el código…"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && withItem("consulta")}
+                  />
+                </Field>
+              </div>
+
+              <div className="flex shrink-0 flex-col gap-3">
                 <button
-                  className="shrink-0 rounded-lg bg-primary px-4 py-2 font-semibold text-primary-foreground"
+                  className="w-full rounded-lg bg-primary px-5 py-3 text-base font-semibold text-primary-foreground"
                   onClick={() => withItem("consulta")}
                 >
                   Consultar información
                 </button>
                 <button
-                  className="shrink-0 rounded-lg bg-secondary px-4 py-2 font-semibold text-secondary-foreground"
+                  className="w-full rounded-lg bg-secondary px-5 py-3 text-base font-semibold text-secondary-foreground"
                   onClick={() => withItem("prestamo")}
                 >
                   Préstamo
                 </button>
                 <button
-                  className="shrink-0 rounded-lg bg-accent px-4 py-2 font-semibold text-accent-foreground"
+                  className="w-full rounded-lg bg-accent px-5 py-3 text-base font-semibold text-accent-foreground"
                   onClick={() => withItem("devolucion")}
                 >
                   Devolución
                 </button>
               </div>
-            </Field>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
