@@ -51,6 +51,20 @@ function toSheets(data: Data) {
   return wb;
 }
 
+function syncDefaults(categories: Category[]): Category[] {
+  return categories.map((c) => {
+    const def = DEFAULT_CATEGORIES.find((d) => d.id === c.id);
+    if (!def) return c;
+    return {
+      ...c,
+      fields: c.fields.map((f) => {
+        const df = def.fields.find((x) => x.name === f.name);
+        return df ? { ...f, ...df } : f;
+      }),
+    };
+  });
+}
+
 function fromWorkbook(wb: XLSX.WorkBook): Data {
   const catRows: Record<string, string>[] = wb.Sheets["Categorias"]
     ? XLSX.utils.sheet_to_json(wb.Sheets["Categorias"])
@@ -84,7 +98,7 @@ function fromWorkbook(wb: XLSX.WorkBook): Data {
       pendingPrint: String(r["Pendiente impresión"]).toUpperCase() === "SI",
     };
   });
-  return { categories, items };
+  return { categories: syncDefaults(categories), items };
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
@@ -94,7 +108,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setData(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw) as Data;
+        setData({ ...parsed, categories: syncDefaults(parsed.categories ?? DEFAULT_CATEGORIES) });
+      }
     } catch {
       /* ignore */
     }
