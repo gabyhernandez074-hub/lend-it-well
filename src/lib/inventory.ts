@@ -7,8 +7,9 @@ export interface Field {
   /** label shown when the user picks "Otro" */
   otherPrompt?: string;
   otherNumeric?: boolean;
-  /** extra field shown when a yes/no field is "Sí" */
+  /** extra field shown when a yes/no field is answered with followUpOn (default "Sí") */
   followUp?: string;
+  followUpOn?: "Sí" | "No";
 }
 
 export interface Category {
@@ -114,7 +115,12 @@ export const DEFAULT_CATEGORIES: Category[] = [
       },
       { name: "Nivel de dificultad", type: "select", options: ["Fácil", "Medio", "Difícil"] },
       { name: "Estado", type: "select", options: ESTADO },
-      { name: "Piezas completas", type: "yesno" },
+      {
+        name: "Piezas completas",
+        type: "yesno",
+        followUp: "¿Qué pieza(s) falta(n)?",
+        followUpOn: "No",
+      },
       { name: "Destacados", type: "yesno", followUp: "Habilidad destacada" },
     ],
   },

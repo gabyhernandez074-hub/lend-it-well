@@ -72,7 +72,7 @@ export function FieldInput({
             <option value="No">No</option>
           </select>
         </Field>
-        {field.followUp && value === "Sí" && (
+        {field.followUp && value === (field.followUpOn ?? "Sí") && (
           <Field label={field.followUp}>
             <input
               className={inputClass}
