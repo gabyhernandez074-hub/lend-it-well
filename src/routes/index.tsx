@@ -150,12 +150,23 @@ function Home() {
               {loans.map((i) => {
                 const d = daysLeft(i.loan!);
                 return (
-                  <li key={i.code} className="rounded-lg border border-border p-2 text-sm">
-                    <p className="font-semibold text-foreground">{itemName(i, categories)}</p>
-                    <p className={d < 0 ? "font-bold text-destructive" : "font-bold text-secondary"}>
-                      {d < 0 ? `${Math.abs(d)} día(s) de retraso` : `${d} día(s) restantes`}
-                    </p>
-                    <p className="text-muted-foreground">{i.loan!.borrower}</p>
+                  <li
+                    key={i.code}
+                    className="flex items-start justify-between gap-2 rounded-lg border border-border p-2 text-sm"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-foreground">{itemName(i, categories)}</p>
+                      <p className={d < 0 ? "font-bold text-destructive" : "font-bold text-secondary"}>
+                        {d < 0 ? `${Math.abs(d)} día(s) de retraso` : `${d} día(s) restantes`}
+                      </p>
+                      <p className="text-muted-foreground">{i.loan!.borrower}</p>
+                    </div>
+                    <button
+                      className="shrink-0 rounded-lg bg-secondary px-2.5 py-1.5 text-xs font-semibold text-secondary-foreground hover:opacity-90"
+                      onClick={() => setLoanDetail(i)}
+                    >
+                      Detalles
+                    </button>
                   </li>
                 );
               })}
