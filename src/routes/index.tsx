@@ -53,6 +53,7 @@ function Home() {
   const [active, setActive] = useState<Item | null>(null);
   const [notFound, setNotFound] = useState<string | null>(null);
   const [detail, setDetail] = useState<Item | null>(null);
+  const [loanDetail, setLoanDetail] = useState<Item | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const scanRef = useRef<HTMLInputElement>(null);
 
