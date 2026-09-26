@@ -61,7 +61,7 @@ export function ItemDetails({
             </span>
           )}
         </div>
-      )}
+      ))}
     </div>
   );
 }
