@@ -355,6 +355,39 @@ function Home() {
         </Modal>
       )}
 
+      {loanDetail && loanDetail.loan && (
+        <Modal title={`Detalles del préstamo`} onClose={() => setLoanDetail(null)}>
+          <div className="space-y-3">
+            <div className="space-y-1 rounded-xl border-2 border-secondary/40 bg-secondary/15 p-3 text-sm">
+              <p className="font-bold text-foreground">
+                Datos del préstamo · {itemName(loanDetail, categories)}
+              </p>
+              <p>
+                Responsable: <strong>{loanDetail.loan.borrower}</strong>
+              </p>
+              {loanDetail.loan.phone && <p>Teléfono: {loanDetail.loan.phone}</p>}
+              <p>
+                Prestado el {fmtDate(loanDetail.loan.start)} por {loanDetail.loan.days} día(s) · vence{" "}
+                {fmtDate(loanDetail.loan.due)}
+              </p>
+              <p
+                className={
+                  daysLeft(loanDetail.loan) < 0 ? "font-bold text-destructive" : "font-bold text-secondary"
+                }
+              >
+                {daysLeft(loanDetail.loan) < 0
+                  ? `${Math.abs(daysLeft(loanDetail.loan))} día(s) de retraso`
+                  : `${daysLeft(loanDetail.loan)} día(s) restantes`}
+              </p>
+            </div>
+            <div className="rounded-xl bg-card p-3">
+              <p className="mb-2 font-bold text-foreground">Información del elemento</p>
+              <ItemDetails item={loanDetail} categories={categories} />
+            </div>
+          </div>
+        </Modal>
+      )}
+
       {modal === "destacados" && (
         <Modal title="Elementos destacados" onClose={close}>
           <ul className="space-y-2">
