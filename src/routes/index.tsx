@@ -141,7 +141,7 @@ function Home() {
           </button>
           <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-border bg-card shadow">
             <h2 className="border-b border-border px-4 py-2 font-bold text-foreground">
-              Devoluciones por urgencia
+              Devoluciones pendientes
             </h2>
             <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
               {loans.length === 0 && (
@@ -159,7 +159,7 @@ function Home() {
                       <p className={d < 0 ? "font-bold text-destructive" : "font-bold text-secondary"}>
                         {d < 0 ? `${Math.abs(d)} día(s) de retraso` : `${d} día(s) restantes`}
                       </p>
-                      <p className="text-muted-foreground">{i.loan!.borrower}</p>
+                      <p className="truncate text-muted-foreground">Responsable: {i.loan!.borrower}</p>
                     </div>
                     <button
                       className="shrink-0 rounded-lg bg-secondary px-2.5 py-1.5 text-xs font-semibold text-secondary-foreground hover:opacity-90"
@@ -382,7 +382,7 @@ function Home() {
             </div>
             <div className="rounded-xl bg-card p-3">
               <p className="mb-2 font-bold text-foreground">Información del elemento</p>
-              <ItemDetails item={loanDetail} categories={categories} />
+              <ItemDetails item={loanDetail} categories={categories} showLoan={false} />
             </div>
           </div>
         </Modal>

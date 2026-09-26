@@ -1,6 +1,14 @@
 import { categoryName, daysLeft, fmtDate, itemName, type Category, type Item } from "@/lib/inventory";
 
-export function ItemDetails({ item, categories }: { item: Item; categories: Category[] }) {
+export function ItemDetails({
+  item,
+  categories,
+  showLoan = true,
+}: {
+  item: Item;
+  categories: Category[];
+  showLoan?: boolean;
+}) {
   const cat = categories.find((c) => c.id === item.categoryId);
   const shown = (cat?.fields ?? []).flatMap((f) => {
     const rows: [string, string][] = [];
