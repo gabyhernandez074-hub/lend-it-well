@@ -37,7 +37,7 @@ export function ItemDetails({
           </div>
         ))}
       </dl>
-      {item.loan ? (
+      {showLoan && (item.loan ? (
         <div className="rounded-xl border-2 border-destructive/40 bg-destructive/10 p-3 text-sm">
           <p className="font-bold text-destructive">En préstamo</p>
           <p>Responsable: {item.loan.borrower}</p>
