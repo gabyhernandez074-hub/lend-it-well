@@ -369,11 +369,6 @@ function Home() {
         </Modal>
       )}
 
-      {detail && (
-        <Modal title="Detalle del elemento" onClose={() => setDetail(null)}>
-          <ItemDetails item={detail} categories={categories} />
-        </Modal>
-      )}
 
       {loanDetail && loanDetail.loan && (
         <Modal title={`Detalles del préstamo`} onClose={() => setLoanDetail(null)}>
