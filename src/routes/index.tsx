@@ -54,6 +54,11 @@ function Home() {
   const [notFound, setNotFound] = useState<string | null>(null);
   const [detail, setDetail] = useState<Item | null>(null);
   const [loanDetail, setLoanDetail] = useState<Item | null>(null);
+  const [invCat, setInvCat] = useState<string>("all");
+  const invItems = useMemo(
+    () => (invCat === "all" ? items : items.filter((i) => i.categoryId === invCat)),
+    [items, invCat],
+  );
   const fileRef = useRef<HTMLInputElement>(null);
   const scanRef = useRef<HTMLInputElement>(null);
 
@@ -301,6 +306,21 @@ function Home() {
 
       {modal === "inventario" && (
         <Modal title="Inventario completo" onClose={close} wide>
+          <div className="mb-3 flex flex-wrap gap-2">
+            {[{ id: "all", name: "Todas" }, ...categories].map((c) => (
+              <button
+                key={c.id}
+                className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                  invCat === c.id
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-card text-foreground hover:bg-muted"
+                }`}
+                onClick={() => setInvCat(c.id)}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
           <table className="w-full text-left text-sm">
             <thead className="sticky top-0 bg-muted">
               <tr>
@@ -312,7 +332,7 @@ function Home() {
               </tr>
             </thead>
             <tbody>
-              {items.map((i, idx) => (
+              {invItems.map((i, idx) => (
                 <tr key={i.code} className="border-t border-border">
                   <td className="px-3 py-2">{idx + 1}</td>
                   <td className="px-3 py-2 font-mono text-xs">{i.code}</td>
@@ -337,10 +357,10 @@ function Home() {
                   </td>
                 </tr>
               ))}
-              {items.length === 0 && (
+              {invItems.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-3 py-6 text-center text-muted-foreground">
-                    El inventario está vacío.
+                    {items.length === 0 ? "El inventario está vacío." : "No hay elementos en esta categoría."}
                   </td>
                 </tr>
               )}

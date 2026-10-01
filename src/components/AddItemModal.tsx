@@ -59,6 +59,14 @@ export function AddItemModal({ onClose }: { onClose: () => void }) {
     );
   }
 
+  function removeFieldFromCategory(name: string) {
+    setCategories(
+      categories.map((c) =>
+        c.id === catId ? { ...c, fields: c.fields.filter((f) => f.name !== name) } : c,
+      ),
+    );
+  }
+
   function save() {
     if (!category) return;
     const nameKey = category.fields[0]!.name;
@@ -200,6 +208,7 @@ export function AddItemModal({ onClose }: { onClose: () => void }) {
                 values={values}
                 onValues={setValues}
                 onAddField={addFieldToCategory}
+                onRemoveField={removeFieldFromCategory}
               />
               {msg && <p className="text-sm font-semibold text-destructive">{msg}</p>}
               <button
