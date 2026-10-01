@@ -442,6 +442,12 @@ function Home() {
           </ul>
         </Modal>
       )}
+
+      {detail && (
+        <Modal title="Detalle del elemento" onClose={() => setDetail(null)}>
+          <ItemDetails item={detail} categories={categories} />
+        </Modal>
+      )}
     </div>
   );
 }
