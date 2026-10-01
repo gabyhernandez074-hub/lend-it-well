@@ -369,11 +369,6 @@ function Home() {
         </Modal>
       )}
 
-      {detail && (
-        <Modal title="Detalle del elemento" onClose={() => setDetail(null)}>
-          <ItemDetails item={detail} categories={categories} />
-        </Modal>
-      )}
 
       {loanDetail && loanDetail.loan && (
         <Modal title={`Detalles del préstamo`} onClose={() => setLoanDetail(null)}>
@@ -414,16 +409,43 @@ function Home() {
             {destacados.length === 0 && (
               <li className="text-sm text-muted-foreground">Aún no hay elementos destacados.</li>
             )}
-            {destacados.map((i) => (
-              <li key={i.code} className="rounded-xl border border-border p-3 text-sm">
-                <p className="font-bold">{itemName(i, categories)}</p>
-                <p className="text-muted-foreground">{categoryName(i, categories)}</p>
-                <p className="font-semibold text-accent">
-                  {i.values["Habilidad destacada"] || "Sin habilidad registrada"}
-                </p>
+            {destacados.map((i, idx) => (
+              <li
+                key={i.code}
+                className="flex items-start justify-between gap-3 rounded-xl border-2 border-accent/40 bg-accent/10 p-3 text-sm"
+              >
+                <div className="flex min-w-0 items-start gap-2">
+                  <span
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent font-bold text-accent-foreground"
+                    title={`Destacado #${idx + 1}`}
+                  >
+                    ★
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate font-bold text-foreground">
+                      {idx + 1}. {itemName(i, categories)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{categoryName(i, categories)}</p>
+                    <p className="font-semibold text-accent">
+                      Habilidad destacada: {i.values["Habilidad destacada"] || "Sin habilidad registrada"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
+                  onClick={() => setDetail(i)}
+                >
+                  Detalle
+                </button>
               </li>
             ))}
           </ul>
+        </Modal>
+      )}
+
+      {detail && (
+        <Modal title="Detalle del elemento" onClose={() => setDetail(null)}>
+          <ItemDetails item={detail} categories={categories} />
         </Modal>
       )}
     </div>
