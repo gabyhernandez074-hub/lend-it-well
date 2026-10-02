@@ -5,17 +5,21 @@ export function Modal({
   onClose,
   children,
   wide,
+  full,
+  bodyClass,
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
   wide?: boolean;
+  full?: boolean;
+  bodyClass?: string;
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4">
       <div
-        className={`flex max-h-[90vh] w-full flex-col overflow-hidden rounded-2xl bg-card shadow-2xl ${
-          wide ? "max-w-5xl" : "max-w-xl"
+        className={`flex w-full flex-col overflow-hidden rounded-2xl bg-card shadow-2xl ${
+          full ? "h-[93vh] max-w-[min(97vw,1500px)]" : `max-h-[90vh] ${wide ? "max-w-5xl" : "max-w-xl"}`
         }`}
       >
         <header className="flex items-center justify-between gap-4 bg-primary px-5 py-3">
@@ -28,7 +32,7 @@ export function Modal({
             ×
           </button>
         </header>
-        <div className="overflow-y-auto px-5 py-4">{children}</div>
+        <div className={bodyClass ?? "overflow-y-auto px-5 py-4"}>{children}</div>
       </div>
     </div>
   );

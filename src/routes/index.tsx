@@ -7,6 +7,8 @@ import { ItemDetails } from "@/components/ItemDetails";
 import { AddItemModal } from "@/components/AddItemModal";
 import { EditItemModal } from "@/components/EditItemModal";
 import { PrintCodes } from "@/components/PrintCodes";
+import { PdfViewer } from "@/components/PdfViewer";
+import instructivo from "@/assets/instructivo_pocalana.pdf.asset.json";
 import { categoryName, daysLeft, fmtDate, itemName, DAY, type Item } from "@/lib/inventory";
 
 export const Route = createFileRoute("/")({
@@ -43,7 +45,8 @@ type ModalKind =
   | "editar"
   | "inventario"
   | "imprimir"
-  | "destacados";
+  | "destacados"
+  | "ayuda";
 
 function Home() {
   const store = useStore();
@@ -94,8 +97,25 @@ function Home() {
     scanRef.current?.focus();
   };
 
+  async function downloadHelp() {
+    try {
+      const res = await fetch(instructivo.url);
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Instructivo_Inventario_Pocalana_4.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    } catch {
+      window.open(instructivo.url, "_blank");
+    }
+  }
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-background">
+
       <header className="flex items-center justify-between gap-4 border-b border-border bg-primary px-5 py-2.5">
         <div className="flex items-center gap-3">
           <img src={logo.url} alt="Logo Pocalana" className="h-11 w-11 rounded-lg object-cover" />
@@ -247,6 +267,38 @@ function Home() {
           </div>
         </section>
       </main>
+
+      <button
+        onClick={() => setModal("ayuda")}
+        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-base font-bold text-primary-foreground shadow-lg transition hover:opacity-90"
+        aria-label="Abrir instructivo de ayuda"
+      >
+        <span aria-hidden className="text-lg leading-none">?</span>
+        Ayuda
+      </button>
+
+      {modal === "ayuda" && (
+        <Modal
+          title="Instructivo de uso · Pocalana"
+          onClose={close}
+          full
+          bodyClass="flex min-h-0 flex-1 flex-col gap-3 p-4"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              Explora el instructivo página por página, usa los controles de zoom para verlo con claridad y
+              descárgalo cuando lo necesites.
+            </p>
+            <button
+              onClick={() => void downloadHelp()}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
+            >
+              Descargar PDF
+            </button>
+          </div>
+          <PdfViewer url={instructivo.url} />
+        </Modal>
+      )}
 
       {modal === "consulta" && (
         <Modal title="Información del elemento" onClose={close}>
