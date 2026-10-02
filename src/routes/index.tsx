@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
+import type {
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
+} from "react";
 import { StoreProvider, useStore, FILE_NAME } from "@/lib/store";
 import { Modal, Field, inputClass } from "@/components/Modal";
 import { ItemDetails } from "@/components/ItemDetails";
@@ -66,6 +70,7 @@ function Home() {
   );
   const fileRef = useRef<HTMLInputElement>(null);
   const scanRef = useRef<HTMLInputElement>(null);
+  const pointerButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (modal !== null) return;
@@ -104,14 +109,19 @@ function Home() {
     event: ReactMouseEvent<HTMLButtonElement>,
     kind: "consulta" | "prestamo" | "devolucion",
   ) {
-    // A keyboard-activated button click has detail === 0. Only a real
-    // pointer click may open an action from the main screen.
-    if (event.detail === 0) {
+    // Only a click preceded by a real pointer event may open a main action.
+    // WebViews can report keyboard-activated clicks with a normal click detail.
+    if (pointerButtonRef.current !== event.currentTarget) {
       event.preventDefault();
       event.stopPropagation();
       return;
     }
+    pointerButtonRef.current = null;
     withItem(kind);
+  }
+
+  function markMainActionPointer(event: ReactPointerEvent<HTMLButtonElement>) {
+    pointerButtonRef.current = event.currentTarget;
   }
 
   const loans = useMemo(
@@ -275,21 +285,27 @@ function Home() {
               <div className="flex shrink-0 flex-col gap-3">
                 <button
                   type="button"
+                  tabIndex={-1}
                   className="w-full rounded-lg bg-primary px-5 py-3 text-base font-semibold text-primary-foreground"
+                  onPointerDown={markMainActionPointer}
                   onClick={(event) => handleMainActionClick(event, "consulta")}
                 >
                   Consultar información
                 </button>
                 <button
                   type="button"
+                  tabIndex={-1}
                   className="w-full rounded-lg bg-secondary px-5 py-3 text-base font-semibold text-secondary-foreground"
+                  onPointerDown={markMainActionPointer}
                   onClick={(event) => handleMainActionClick(event, "prestamo")}
                 >
                   Préstamo
                 </button>
                 <button
                   type="button"
+                  tabIndex={-1}
                   className="w-full rounded-lg bg-accent px-5 py-3 text-base font-semibold text-accent-foreground"
+                  onPointerDown={markMainActionPointer}
                   onClick={(event) => handleMainActionClick(event, "devolucion")}
                 >
                   Devolución
