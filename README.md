@@ -3,6 +3,10 @@
 Pocalana is a library inventory application for books, board games, custom
 categories, loans, returns, and barcode printing.
 
+The logo and user guide are stored locally in `public/pocalana-logo.png` and
+`public/instructivo_pocalana.pdf`, so they remain available in the packaged
+desktop application without an internet connection.
+
 ## Development
 
 Install the current Node.js LTS release, Rust, and the Tauri system
