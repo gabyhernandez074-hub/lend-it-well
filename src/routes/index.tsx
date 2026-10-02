@@ -222,8 +222,19 @@ function Home() {
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") e.preventDefault();
-                    }}
+                                          if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            return false;
+                                          }
+                                        }}
+                                        onKeyUp={(e) => {
+                                          if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            return false;
+                                          }
+                                        }}
                   />
                 </Field>
               </div>
