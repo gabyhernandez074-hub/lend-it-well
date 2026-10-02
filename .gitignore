@@ -16,6 +16,10 @@ dist-ssr
 .nitro
 *.local
 
+# Tauri build output
+src-tauri/target/
+src-tauri/gen/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
