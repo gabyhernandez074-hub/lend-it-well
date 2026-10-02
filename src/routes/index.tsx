@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { KeyboardEvent as ReactKeyboardEvent } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from "react";
 import { StoreProvider, useStore, FILE_NAME } from "@/lib/store";
 import { Modal, Field, inputClass } from "@/components/Modal";
 import { ItemDetails } from "@/components/ItemDetails";
@@ -98,6 +98,20 @@ function Home() {
     setNotFound(null);
     setActive(found);
     setModal(kind);
+  }
+
+  function handleMainActionClick(
+    event: ReactMouseEvent<HTMLButtonElement>,
+    kind: "consulta" | "prestamo" | "devolucion",
+  ) {
+    // A keyboard-activated button click has detail === 0. Only a real
+    // pointer click may open an action from the main screen.
+    if (event.detail === 0) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    withItem(kind);
   }
 
   const loans = useMemo(
@@ -260,20 +274,23 @@ function Home() {
 
               <div className="flex shrink-0 flex-col gap-3">
                 <button
+                  type="button"
                   className="w-full rounded-lg bg-primary px-5 py-3 text-base font-semibold text-primary-foreground"
-                  onClick={() => withItem("consulta")}
+                  onClick={(event) => handleMainActionClick(event, "consulta")}
                 >
                   Consultar información
                 </button>
                 <button
+                  type="button"
                   className="w-full rounded-lg bg-secondary px-5 py-3 text-base font-semibold text-secondary-foreground"
-                  onClick={() => withItem("prestamo")}
+                  onClick={(event) => handleMainActionClick(event, "prestamo")}
                 >
                   Préstamo
                 </button>
                 <button
+                  type="button"
                   className="w-full rounded-lg bg-accent px-5 py-3 text-base font-semibold text-accent-foreground"
-                  onClick={() => withItem("devolucion")}
+                  onClick={(event) => handleMainActionClick(event, "devolucion")}
                 >
                   Devolución
                 </button>
