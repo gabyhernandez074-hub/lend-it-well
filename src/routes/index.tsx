@@ -7,7 +7,7 @@ import { ItemDetails } from "@/components/ItemDetails";
 import { AddItemModal } from "@/components/AddItemModal";
 import { EditItemModal } from "@/components/EditItemModal";
 import { PrintCodes } from "@/components/PrintCodes";
-import instructivo from "@/assets/instructivo_pocalana.pdf.asset.json";
+import { PdfViewer } from "@/components/PdfViewer";
 import { categoryName, daysLeft, fmtDate, itemName, DAY, type Item } from "@/lib/inventory";
 
 export const Route = createFileRoute("/")({
