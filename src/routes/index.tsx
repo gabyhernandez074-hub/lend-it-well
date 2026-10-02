@@ -7,6 +7,8 @@ import { ItemDetails } from "@/components/ItemDetails";
 import { AddItemModal } from "@/components/AddItemModal";
 import { EditItemModal } from "@/components/EditItemModal";
 import { PrintCodes } from "@/components/PrintCodes";
+import { PdfViewer } from "@/components/PdfViewer";
+import instructivo from "@/assets/instructivo_pocalana.pdf.asset.json";
 import { categoryName, daysLeft, fmtDate, itemName, DAY, type Item } from "@/lib/inventory";
 
 export const Route = createFileRoute("/")({
@@ -43,7 +45,8 @@ type ModalKind =
   | "editar"
   | "inventario"
   | "imprimir"
-  | "destacados";
+  | "destacados"
+  | "ayuda";
 
 function Home() {
   const store = useStore();
@@ -54,6 +57,11 @@ function Home() {
   const [notFound, setNotFound] = useState<string | null>(null);
   const [detail, setDetail] = useState<Item | null>(null);
   const [loanDetail, setLoanDetail] = useState<Item | null>(null);
+  const [invCat, setInvCat] = useState<string>("all");
+  const invItems = useMemo(
+    () => (invCat === "all" ? items : items.filter((i) => i.categoryId === invCat)),
+    [items, invCat],
+  );
   const fileRef = useRef<HTMLInputElement>(null);
   const scanRef = useRef<HTMLInputElement>(null);
 
@@ -89,8 +97,25 @@ function Home() {
     scanRef.current?.focus();
   };
 
+  async function downloadHelp() {
+    try {
+      const res = await fetch(instructivo.url);
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Instructivo_Inventario_Pocalana_4.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    } catch {
+      window.open(instructivo.url, "_blank");
+    }
+  }
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-background">
+
       <header className="flex items-center justify-between gap-4 border-b border-border bg-primary px-5 py-2.5">
         <div className="flex items-center gap-3">
           <img src={logo.url} alt="Logo Pocalana" className="h-11 w-11 rounded-lg object-cover" />
@@ -141,7 +166,7 @@ function Home() {
           </button>
           <div className="flex min-h-0 flex-1 flex-col rounded-xl border border-border bg-card shadow">
             <h2 className="border-b border-border px-4 py-2 font-bold text-foreground">
-              Devoluciones por urgencia
+              Devoluciones pendientes
             </h2>
             <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
               {loans.length === 0 && (
@@ -159,7 +184,7 @@ function Home() {
                       <p className={d < 0 ? "font-bold text-destructive" : "font-bold text-secondary"}>
                         {d < 0 ? `${Math.abs(d)} día(s) de retraso` : `${d} día(s) restantes`}
                       </p>
-                      <p className="text-muted-foreground">{i.loan!.borrower}</p>
+                      <p className="truncate text-muted-foreground">Responsable: {i.loan!.borrower}</p>
                     </div>
                     <button
                       className="shrink-0 rounded-lg bg-secondary px-2.5 py-1.5 text-xs font-semibold text-secondary-foreground hover:opacity-90"
@@ -243,6 +268,38 @@ function Home() {
         </section>
       </main>
 
+      <button
+        onClick={() => setModal("ayuda")}
+        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-base font-bold text-primary-foreground shadow-lg transition hover:opacity-90"
+        aria-label="Abrir instructivo de ayuda"
+      >
+        <span aria-hidden className="text-lg leading-none">?</span>
+        Ayuda
+      </button>
+
+      {modal === "ayuda" && (
+        <Modal
+          title="Instructivo de uso · Pocalana"
+          onClose={close}
+          full
+          bodyClass="flex min-h-0 flex-1 flex-col gap-3 p-4"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              Explora el instructivo página por página, usa los controles de zoom para verlo con claridad y
+              descárgalo cuando lo necesites.
+            </p>
+            <button
+              onClick={() => void downloadHelp()}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90"
+            >
+              Descargar PDF
+            </button>
+          </div>
+          <PdfViewer url={instructivo.url} />
+        </Modal>
+      )}
+
       {modal === "consulta" && (
         <Modal title="Información del elemento" onClose={close}>
           {active ? <ItemDetails item={active} categories={categories} /> : <Warn text={notFound!} />}
@@ -301,6 +358,21 @@ function Home() {
 
       {modal === "inventario" && (
         <Modal title="Inventario completo" onClose={close} wide>
+          <div className="mb-3 flex flex-wrap gap-2">
+            {[{ id: "all", name: "Todas" }, ...categories].map((c) => (
+              <button
+                key={c.id}
+                className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                  invCat === c.id
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-card text-foreground hover:bg-muted"
+                }`}
+                onClick={() => setInvCat(c.id)}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
           <table className="w-full text-left text-sm">
             <thead className="sticky top-0 bg-muted">
               <tr>
@@ -312,7 +384,7 @@ function Home() {
               </tr>
             </thead>
             <tbody>
-              {items.map((i, idx) => (
+              {invItems.map((i, idx) => (
                 <tr key={i.code} className="border-t border-border">
                   <td className="px-3 py-2">{idx + 1}</td>
                   <td className="px-3 py-2 font-mono text-xs">{i.code}</td>
@@ -337,10 +409,10 @@ function Home() {
                   </td>
                 </tr>
               ))}
-              {items.length === 0 && (
+              {invItems.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-3 py-6 text-center text-muted-foreground">
-                    El inventario está vacío.
+                    {items.length === 0 ? "El inventario está vacío." : "No hay elementos en esta categoría."}
                   </td>
                 </tr>
               )}
@@ -349,9 +421,37 @@ function Home() {
         </Modal>
       )}
 
-      {detail && (
-        <Modal title="Detalle del elemento" onClose={() => setDetail(null)}>
-          <ItemDetails item={detail} categories={categories} />
+
+      {loanDetail && loanDetail.loan && (
+        <Modal title={`Detalles del préstamo`} onClose={() => setLoanDetail(null)}>
+          <div className="space-y-3">
+            <div className="space-y-1 rounded-xl border-2 border-secondary/40 bg-secondary/15 p-3 text-sm">
+              <p className="font-bold text-foreground">
+                Datos del préstamo · {itemName(loanDetail, categories)}
+              </p>
+              <p>
+                Responsable: <strong>{loanDetail.loan.borrower}</strong>
+              </p>
+              {loanDetail.loan.phone && <p>Teléfono: {loanDetail.loan.phone}</p>}
+              <p>
+                Prestado el {fmtDate(loanDetail.loan.start)} por {loanDetail.loan.days} día(s) · vence{" "}
+                {fmtDate(loanDetail.loan.due)}
+              </p>
+              <p
+                className={
+                  daysLeft(loanDetail.loan) < 0 ? "font-bold text-destructive" : "font-bold text-secondary"
+                }
+              >
+                {daysLeft(loanDetail.loan) < 0
+                  ? `${Math.abs(daysLeft(loanDetail.loan))} día(s) de retraso`
+                  : `${daysLeft(loanDetail.loan)} día(s) restantes`}
+              </p>
+            </div>
+            <div className="rounded-xl bg-card p-3">
+              <p className="mb-2 font-bold text-foreground">Información del elemento</p>
+              <ItemDetails item={loanDetail} categories={categories} showLoan={false} />
+            </div>
+          </div>
         </Modal>
       )}
 
@@ -361,16 +461,43 @@ function Home() {
             {destacados.length === 0 && (
               <li className="text-sm text-muted-foreground">Aún no hay elementos destacados.</li>
             )}
-            {destacados.map((i) => (
-              <li key={i.code} className="rounded-xl border border-border p-3 text-sm">
-                <p className="font-bold">{itemName(i, categories)}</p>
-                <p className="text-muted-foreground">{categoryName(i, categories)}</p>
-                <p className="font-semibold text-accent">
-                  {i.values["Habilidad destacada"] || "Sin habilidad registrada"}
-                </p>
+            {destacados.map((i, idx) => (
+              <li
+                key={i.code}
+                className="flex items-start justify-between gap-3 rounded-xl border-2 border-accent/40 bg-accent/10 p-3 text-sm"
+              >
+                <div className="flex min-w-0 items-start gap-2">
+                  <span
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent font-bold text-accent-foreground"
+                    title={`Destacado #${idx + 1}`}
+                  >
+                    ★
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate font-bold text-foreground">
+                      {idx + 1}. {itemName(i, categories)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{categoryName(i, categories)}</p>
+                    <p className="font-semibold text-accent">
+                      Habilidad destacada: {i.values["Habilidad destacada"] || "Sin habilidad registrada"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
+                  onClick={() => setDetail(i)}
+                >
+                  Detalle
+                </button>
               </li>
             ))}
           </ul>
+        </Modal>
+      )}
+
+      {detail && (
+        <Modal title="Detalle del elemento" onClose={() => setDetail(null)}>
+          <ItemDetails item={detail} categories={categories} />
         </Modal>
       )}
     </div>

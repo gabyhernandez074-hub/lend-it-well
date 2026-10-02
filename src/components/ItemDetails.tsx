@@ -1,6 +1,14 @@
 import { categoryName, daysLeft, fmtDate, itemName, type Category, type Item } from "@/lib/inventory";
 
-export function ItemDetails({ item, categories }: { item: Item; categories: Category[] }) {
+export function ItemDetails({
+  item,
+  categories,
+  showLoan = true,
+}: {
+  item: Item;
+  categories: Category[];
+  showLoan?: boolean;
+}) {
   const cat = categories.find((c) => c.id === item.categoryId);
   const shown = (cat?.fields ?? []).flatMap((f) => {
     const rows: [string, string][] = [];
@@ -29,7 +37,7 @@ export function ItemDetails({ item, categories }: { item: Item; categories: Cate
           </div>
         ))}
       </dl>
-      {item.loan ? (
+      {showLoan && (item.loan ? (
         <div className="rounded-xl border-2 border-destructive/40 bg-destructive/10 p-3 text-sm">
           <p className="font-bold text-destructive">En préstamo</p>
           <p>Responsable: {item.loan.borrower}</p>
@@ -53,7 +61,7 @@ export function ItemDetails({ item, categories }: { item: Item; categories: Cate
             </span>
           )}
         </div>
-      )}
+      ))}
     </div>
   );
 }

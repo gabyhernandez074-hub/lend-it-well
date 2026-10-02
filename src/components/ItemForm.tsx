@@ -117,19 +117,64 @@ export function FieldsEditor({
   values,
   onValues,
   onAddField,
+  onRemoveField,
 }: {
   category: Category;
   values: Record<string, string>;
   onValues: (v: Record<string, string>) => void;
   onAddField: (name: string) => void;
+  onRemoveField?: (name: string) => void;
 }) {
   const [newField, setNewField] = useState("");
+  const [toRemove, setToRemove] = useState<string | null>(null);
   const set = (k: string, v: string) => onValues({ ...values, [k]: v });
 
   return (
     <div className="space-y-3">
       {category.fields.map((f, idx) => (
-        <div key={f.name}>
+        <div key={f.name} className="relative">
+          {onRemoveField && idx > 0 && (
+            <button
+              type="button"
+              title={`Eliminar campo «${f.name}»`}
+              className="absolute right-0 top-0 z-10 rounded px-2 text-xs font-semibold text-destructive hover:bg-destructive/10"
+              onClick={() => setToRemove(f.name)}
+            >
+              Eliminar campo
+            </button>
+          )}
+          {toRemove === f.name && (
+            <div className="mb-2 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm">
+              <p className="font-semibold text-destructive">
+                ¿Eliminar el campo «{f.name}» de la categoría «{category.name}»?
+              </p>
+              <p className="text-foreground/70">
+                Se eliminará definitivamente para todos los registros futuros. Esta acción no se puede revertir.
+              </p>
+              <div className="mt-2 flex gap-2">
+                <button
+                  type="button"
+                  className="rounded-lg bg-destructive px-3 py-1 font-semibold text-destructive-foreground"
+                  onClick={() => {
+                    const { [f.name]: _a, ...rest } = values;
+                    if (f.followUp) delete rest[f.followUp];
+                    onValues(rest);
+                    onRemoveField?.(f.name);
+                    setToRemove(null);
+                  }}
+                >
+                  Sí, eliminar
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg border border-border px-3 py-1 font-semibold"
+                  onClick={() => setToRemove(null)}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
           <FieldInput
             field={idx === 0 ? { ...f, name: `${f.name} *` } : f}
             value={values[f.name] ?? ""}
