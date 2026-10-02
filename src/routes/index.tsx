@@ -286,8 +286,6 @@ function Home() {
 
               <div className="flex shrink-0 flex-col gap-3">
                 <div
-                  role="button"
-                  tabIndex={-1}
                   className="w-full rounded-lg bg-primary px-5 py-3 text-base font-semibold text-primary-foreground"
                   onPointerDown={markMainActionPointer}
                   onPointerUp={(event) => handleMainActionPointerUp(event, "consulta")}
@@ -295,8 +293,6 @@ function Home() {
                   Consultar información
                 </div>
                 <div
-                  role="button"
-                  tabIndex={-1}
                   className="w-full rounded-lg bg-secondary px-5 py-3 text-base font-semibold text-secondary-foreground"
                   onPointerDown={markMainActionPointer}
                   onPointerUp={(event) => handleMainActionPointerUp(event, "prestamo")}
@@ -304,8 +300,6 @@ function Home() {
                   Préstamo
                 </div>
                 <div
-                  role="button"
-                  tabIndex={-1}
                   className="w-full rounded-lg bg-accent px-5 py-3 text-base font-semibold text-accent-foreground"
                   onPointerDown={markMainActionPointer}
                   onPointerUp={(event) => handleMainActionPointerUp(event, "devolucion")}
