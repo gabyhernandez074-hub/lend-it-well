@@ -221,7 +221,9 @@ function Home() {
                     placeholder="Escanea aquí el código…"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && withItem("consulta")}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") e.preventDefault();
+                    }}
                   />
                 </Field>
               </div>
