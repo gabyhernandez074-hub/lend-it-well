@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { StoreProvider, useStore, FILE_NAME } from "@/lib/store";
 import { Modal, Field, inputClass } from "@/components/Modal";
 import { ItemDetails } from "@/components/ItemDetails";
@@ -66,6 +67,26 @@ function Home() {
   const fileRef = useRef<HTMLInputElement>(null);
   const scanRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (modal !== null) return;
+
+    const ignoreEnter = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
+
+    window.addEventListener("keydown", ignoreEnter, true);
+    window.addEventListener("keypress", ignoreEnter, true);
+    window.addEventListener("keyup", ignoreEnter, true);
+    return () => {
+      window.removeEventListener("keydown", ignoreEnter, true);
+      window.removeEventListener("keypress", ignoreEnter, true);
+      window.removeEventListener("keyup", ignoreEnter, true);
+    };
+  }, [modal]);
+
   function withItem(kind: ModalKind) {
     const found = items.find((i) => i.code === code.trim());
     if (!found) {
@@ -115,8 +136,20 @@ function Home() {
     }
   }
 
+  function ignoreMainScreenEnter(event: ReactKeyboardEvent<HTMLDivElement>) {
+    if (modal === null && event.key === "Enter") {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-background">
+    <div
+      className="flex h-screen w-screen flex-col overflow-hidden bg-background"
+      onKeyDownCapture={ignoreMainScreenEnter}
+      onKeyUpCapture={ignoreMainScreenEnter}
+      onKeyPressCapture={ignoreMainScreenEnter}
+    >
 
       <header className="flex items-center justify-between gap-4 border-b border-border bg-primary px-5 py-2.5">
         <div className="flex items-center gap-3">
@@ -221,20 +254,6 @@ function Home() {
                     placeholder="Escanea aquí el código…"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
-                    onKeyDown={(e) => {
-                                          if (e.key === "Enter") {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            return false;
-                                          }
-                                        }}
-                                        onKeyUp={(e) => {
-                                          if (e.key === "Enter") {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            return false;
-                                          }
-                                        }}
                   />
                 </Field>
               </div>
