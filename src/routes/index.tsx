@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
-import logo from "@/assets/pocalana-logo.png.asset.json";
 import { StoreProvider, useStore, FILE_NAME } from "@/lib/store";
 import { Modal, Field, inputClass } from "@/components/Modal";
 import { ItemDetails } from "@/components/ItemDetails";
@@ -8,8 +7,10 @@ import { AddItemModal } from "@/components/AddItemModal";
 import { EditItemModal } from "@/components/EditItemModal";
 import { PrintCodes } from "@/components/PrintCodes";
 import { PdfViewer } from "@/components/PdfViewer";
-import instructivo from "@/assets/instructivo_pocalana.pdf.asset.json";
 import { categoryName, daysLeft, fmtDate, itemName, DAY, type Item } from "@/lib/inventory";
+
+const logoUrl = "/pocalana-logo.png";
+const instructivoUrl = "/instructivo_pocalana.pdf";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -99,7 +100,8 @@ function Home() {
 
   async function downloadHelp() {
     try {
-      const res = await fetch(instructivo.url);
+      const res = await fetch(instructivoUrl);
+      if (!res.ok) throw new Error(`Help PDF request failed: ${res.status}`);
       const blob = await res.blob();
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
@@ -109,7 +111,7 @@ function Home() {
       a.remove();
       URL.revokeObjectURL(a.href);
     } catch {
-      window.open(instructivo.url, "_blank");
+      window.open(instructivoUrl, "_blank");
     }
   }
 
@@ -118,7 +120,7 @@ function Home() {
 
       <header className="flex items-center justify-between gap-4 border-b border-border bg-primary px-5 py-2.5">
         <div className="flex items-center gap-3">
-          <img src={logo.url} alt="Logo Pocalana" className="h-11 w-11 rounded-lg object-cover" />
+          <img src={logoUrl} alt="Logo Pocalana" className="h-11 w-11 rounded-lg object-cover" />
           <div>
             <h1 className="text-xl font-extrabold tracking-wide text-primary-foreground">
               POCALANA · Inventario de biblioteca
@@ -296,7 +298,7 @@ function Home() {
               Descargar PDF
             </button>
           </div>
-          <PdfViewer url={instructivo.url} />
+          <PdfViewer url={instructivoUrl} />
         </Modal>
       )}
 
