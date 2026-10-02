@@ -8,6 +8,7 @@ import { AddItemModal } from "@/components/AddItemModal";
 import { EditItemModal } from "@/components/EditItemModal";
 import { PrintCodes } from "@/components/PrintCodes";
 import { PdfViewer } from "@/components/PdfViewer";
+import instructivo from "@/assets/instructivo_pocalana.pdf.asset.json";
 import { categoryName, daysLeft, fmtDate, itemName, DAY, type Item } from "@/lib/inventory";
 
 export const Route = createFileRoute("/")({
@@ -285,7 +286,8 @@ function Home() {
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">
-              Navega el instructivo con el visor: usa los controles para hacer zoom, buscar y pasar de página.
+              Explora el instructivo página por página, usa los controles de zoom para verlo con claridad y
+              descárgalo cuando lo necesites.
             </p>
             <button
               onClick={() => void downloadHelp()}
@@ -294,11 +296,7 @@ function Home() {
               Descargar PDF
             </button>
           </div>
-          <iframe
-            src={instructivo.url}
-            title="Instructivo de uso Pocalana"
-            className="min-h-0 w-full flex-1 rounded-xl border border-border bg-white"
-          />
+          <PdfViewer url={instructivo.url} />
         </Modal>
       )}
 
