@@ -12,6 +12,8 @@ import { EditItemModal } from "@/components/EditItemModal";
 import { PrintCodes } from "@/components/PrintCodes";
 import { PdfViewer } from "@/components/PdfViewer";
 import { categoryName, daysLeft, fmtDate, itemName, DAY, type Item } from "@/lib/inventory";
+import { downloadInventoryBackup, uploadInventoryBackup } from "@/lib/google-drive";
+import type { Data } from "@/lib/store";
 
 const logoUrl = "/pocalana-logo.png";
 const instructivoUrl = "/instructivo_pocalana.pdf";
@@ -55,7 +57,7 @@ type ModalKind =
 
 function Home() {
   const store = useStore();
-  const { items, categories, upsertItem, exportFile, importFile } = store;
+  const { items, categories, upsertItem, exportFile, importFile, replaceData } = store;
   const [code, setCode] = useState("");
   const [modal, setModal] = useState<ModalKind>(null);
   const [active, setActive] = useState<Item | null>(null);
@@ -64,6 +66,8 @@ function Home() {
   const [loanDetail, setLoanDetail] = useState<Item | null>(null);
   const [invCat, setInvCat] = useState<string>("all");
   const [invSearch, setInvSearch] = useState("");
+  const [cloudBusy, setCloudBusy] = useState(false);
+  const [cloudMessage, setCloudMessage] = useState<string | null>(null);
   const invItems = useMemo(
     () => {
       const query = invSearch.trim().toLocaleLowerCase();
@@ -98,7 +102,7 @@ function Home() {
   );
   const fileRef = useRef<HTMLInputElement>(null);
   const scanRef = useRef<HTMLInputElement>(null);
-  const pointerButtonRef = useRef<HTMLButtonElement | null>(null);
+  const pointerButtonRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (modal !== null) return;
@@ -191,6 +195,41 @@ function Home() {
     }
   }
 
+  async function backupToGoogleDrive() {
+    setCloudBusy(true);
+    setCloudMessage(null);
+    try {
+      await uploadInventoryBackup(categories, items);
+      setCloudMessage("Copia guardada en Google Drive.");
+    } catch (error) {
+      setCloudMessage(error instanceof Error ? error.message : "No se pudo guardar la copia.");
+    } finally {
+      setCloudBusy(false);
+    }
+  }
+
+  async function restoreFromGoogleDrive() {
+    setCloudBusy(true);
+    setCloudMessage(null);
+    try {
+      const backup = await downloadInventoryBackup();
+      if (!Array.isArray(backup.categories) || !Array.isArray(backup.items)) {
+        throw new Error("La copia de Google Drive no tiene un formato válido.");
+      }
+      replaceData({
+        categories: backup.categories as Data["categories"],
+        items: backup.items as Data["items"],
+      });
+      setCloudMessage(
+        `Inventario restaurado${backup.savedAt ? ` (${fmtDate(backup.savedAt)})` : ""}.`,
+      );
+    } catch (error) {
+      setCloudMessage(error instanceof Error ? error.message : "No se pudo restaurar la copia.");
+    } finally {
+      setCloudBusy(false);
+    }
+  }
+
   function ignoreMainScreenEnter(event: ReactKeyboardEvent<HTMLDivElement>) {
     if (modal === null && event.key === "Enter") {
       event.preventDefault();
@@ -242,8 +281,27 @@ function Home() {
           >
             Guardar Excel
           </button>
+          <button
+            className="rounded-lg bg-primary-foreground/15 px-3 py-1.5 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground/25 disabled:opacity-50"
+            onClick={() => void backupToGoogleDrive()}
+            disabled={cloudBusy}
+          >
+            {cloudBusy ? "Sincronizando..." : "Guardar en Drive"}
+          </button>
+          <button
+            className="rounded-lg bg-primary-foreground/15 px-3 py-1.5 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground/25 disabled:opacity-50"
+            onClick={() => void restoreFromGoogleDrive()}
+            disabled={cloudBusy}
+          >
+            Restaurar Drive
+          </button>
         </div>
       </header>
+      {cloudMessage && (
+        <div className="border-b border-border bg-muted px-5 py-2 text-sm text-foreground" role="status">
+          {cloudMessage}
+        </div>
+      )}
 
       <main className="grid min-h-0 flex-1 grid-cols-[320px_1fr] gap-4 p-4">
         {/* Columna izquierda */}
