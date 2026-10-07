@@ -63,9 +63,38 @@ function Home() {
   const [detail, setDetail] = useState<Item | null>(null);
   const [loanDetail, setLoanDetail] = useState<Item | null>(null);
   const [invCat, setInvCat] = useState<string>("all");
+  const [invSearch, setInvSearch] = useState("");
   const invItems = useMemo(
-    () => (invCat === "all" ? items : items.filter((i) => i.categoryId === invCat)),
-    [items, invCat],
+    () => {
+      const query = invSearch.trim().toLocaleLowerCase();
+
+      return items
+        .filter((item) => invCat === "all" || item.categoryId === invCat)
+        .filter((item) => {
+          if (!query) return true;
+
+          const searchableText = [
+            itemName(item, categories),
+            categoryName(item, categories),
+            item.code,
+            ...Object.values(item.values),
+          ]
+            .join(" ")
+            .toLocaleLowerCase();
+
+          return searchableText.includes(query);
+        })
+        .sort((a, b) => {
+          const nameOrder = itemName(a, categories).localeCompare(
+            itemName(b, categories),
+            "es",
+            { sensitivity: "base" },
+          );
+
+          return nameOrder || a.code.localeCompare(b.code, "es", { sensitivity: "base" });
+        });
+    },
+    [items, categories, invCat, invSearch],
   );
   const fileRef = useRef<HTMLInputElement>(null);
   const scanRef = useRef<HTMLInputElement>(null);
@@ -421,21 +450,39 @@ function Home() {
 
       {modal === "inventario" && (
         <Modal title="Inventario completo" onClose={close} wide>
-          <div className="mb-3 flex flex-wrap gap-2">
-            {[{ id: "all", name: "Todas" }, ...categories].map((c) => (
-              <button
-                key={c.id}
-                className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                  invCat === c.id
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-border bg-card text-foreground hover:bg-muted"
-                }`}
-                onClick={() => setInvCat(c.id)}
-              >
-                {c.name}
-              </button>
-            ))}
+          <div className="mb-3 space-y-3">
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-foreground">
+                Buscar elemento
+              </span>
+              <input
+                className={inputClass}
+                type="search"
+                value={invSearch}
+                onChange={(event) => setInvSearch(event.target.value)}
+                placeholder="Buscar por nombre, código, categoría o información..."
+                aria-label="Buscar en el inventario"
+              />
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {[{ id: "all", name: "Todas" }, ...categories].map((c) => (
+                <button
+                  key={c.id}
+                  className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                    invCat === c.id
+                      ? "bg-primary text-primary-foreground"
+                      : "border border-border bg-card text-foreground hover:bg-muted"
+                  }`}
+                  onClick={() => setInvCat(c.id)}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
           </div>
+          <p className="mb-2 text-xs text-muted-foreground">
+            {invItems.length} elemento(s) mostrado(s), ordenado(s) alfabéticamente por nombre.
+          </p>
           <table className="w-full text-left text-sm">
             <thead className="sticky top-0 bg-muted">
               <tr>
@@ -475,7 +522,11 @@ function Home() {
               {invItems.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-3 py-6 text-center text-muted-foreground">
-                    {items.length === 0 ? "El inventario está vacío." : "No hay elementos en esta categoría."}
+                    {items.length === 0
+                      ? "El inventario está vacío."
+                      : invSearch.trim()
+                        ? "No se encontraron elementos con esa búsqueda."
+                        : "No hay elementos en esta categoría."}
                   </td>
                 </tr>
               )}
