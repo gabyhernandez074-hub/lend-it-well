@@ -5,7 +5,7 @@ import { DEFAULT_CATEGORIES, type Category, type Item } from "./inventory";
 const STORAGE_KEY = "pocalana_inventario_v1";
 export const FILE_NAME = "inventario_pocalana.xlsx";
 
-export interface Data {
+interface Data {
   categories: Category[];
   items: Item[];
 }
@@ -13,7 +13,6 @@ export interface Data {
 interface Store extends Data {
   setCategories: (c: Category[]) => void;
   setItems: (i: Item[]) => void;
-  replaceData: (data: Data) => void;
   upsertItem: (i: Item) => void;
   removeItem: (code: string) => void;
   getItem: (code: string) => Item | undefined;
@@ -129,8 +128,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       ready,
       setCategories: (categories) => setData((d) => ({ ...d, categories })),
       setItems: (items) => setData((d) => ({ ...d, items })),
-      replaceData: (next) =>
-        setData({ ...next, categories: syncDefaults(next.categories ?? DEFAULT_CATEGORIES) }),
       upsertItem: (item) =>
         setData((d) => {
           const exists = d.items.some((i) => i.code === item.code);
