@@ -33,6 +33,28 @@ A production Windows installer can be built with:
 npm run tauri:build
 ```
 
+The Windows installer is an `.exe` created with NSIS and is written to:
+
+```text
+src-tauri/target/release/bundle/nsis/
+```
+
+You can also build only the Windows `.exe` installer with:
+
+```sh
+npm run tauri:build:exe
+```
+
+The compiled application executable itself is also available at:
+
+```text
+src-tauri/target/release/pocalana.exe
+```
+
+The NSIS installer is recommended for distribution because it installs the
+application and creates the normal Windows shortcuts. The raw executable can
+run without an installer but does not create shortcuts or uninstall entries.
+
 `src-tauri/tauri.conf.json` enables all Tauri bundle targets, so the same
 project can be built on macOS or Linux without application code changes. Build
 on the target operating system, or use the corresponding Rust target and
